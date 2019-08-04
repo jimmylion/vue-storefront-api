@@ -30,6 +30,8 @@ function getMagentoDefaultConfig(storeCode) {
     SKIP_ATTRIBUTES: false,
     SKIP_TAXRULE: false,
     SKIP_PRODUCTS: false,
+    SKIP_PAGES: false,
+    SKIP_BLOCKS: false,
     PRODUCTS_EXCLUDE_DISABLED: config.catalog.excludeDisabledProducts,
     MAGENTO_CONSUMER_KEY: apiConfig.consumerKey,
     MAGENTO_CONSUMER_SECRET: apiConfig.consumerSecret,
@@ -97,7 +99,7 @@ program
 
     exec('node', [
       '--harmony',
-      'node_modules/mage2vuestorefront/src/cli.js',
+      '../mage2vuestorefront/src/cli.js',
       'productsdelta',
       '--adapter=' + cmd.adapter,
       '--partitions=' + cmd.partitions,
@@ -112,6 +114,77 @@ program
   })
 
 program
+  .command('pages')
+  .option('--store-code <storeCode>', 'storeCode in multistore setup', null)
+  .option('--removeNonExistent <removeNonExistent>', 'remove non existent products', false)
+  .action((cmd) => {
+    let magentoConfig = getMagentoDefaultConfig(cmd.storeCode)
+    magentoConfig.MAGENTO_STORE_ID = 1
+    magentoConfig.INDEX_META_PATH = '.lastIndex.json'
+
+    if (cmd.storeCode) {
+      const storeView = config.storeViews[cmd.storeCode]
+      if (!storeView) {
+        console.error('Wrong storeCode provided - no such store in the config.storeViews[storeCode]', cmd.storeCode)
+        process.exit(-1)
+      } else {
+        magentoConfig.INDEX_NAME = storeView.elasticsearch.index
+        magentoConfig.INDEX_META_PATH = '.lastIndex-' + cmd.storeCode + '.json'
+        magentoConfig.MAGENTO_STORE_ID = storeView.storeId
+      }
+    }
+
+    const env = Object.assign({}, magentoConfig, process.env)  // use process env as well
+    console.log('=== Pages indexer is about to start ===')
+
+    exec('node', [
+      '--harmony',
+      '../mage2vuestorefront/src/cli.js',
+      'pages',
+      '--removeNonExistent=' + cmd.removeNonExistent
+    ], { env: env, shell: true }).then((res) => {
+
+    })
+
+  })
+
+program
+  .command('blocks')
+  .option('--store-code <storeCode>', 'storeCode in multistore setup', null)
+  .option('--removeNonExistent <removeNonExistent>', 'remove non existent products', false)
+  .action((cmd) => {
+    let magentoConfig = getMagentoDefaultConfig(cmd.storeCode)
+    magentoConfig.MAGENTO_STORE_ID = 1
+    magentoConfig.INDEX_META_PATH = '.lastIndex.json'
+
+    if (cmd.storeCode) {
+      const storeView = config.storeViews[cmd.storeCode]
+      if (!storeView) {
+        console.error('Wrong storeCode provided - no such store in the config.storeViews[storeCode]', cmd.storeCode)
+        process.exit(-1)
+      } else {
+        magentoConfig.INDEX_NAME = storeView.elasticsearch.index
+        magentoConfig.INDEX_META_PATH = '.lastIndex-' + cmd.storeCode + '.json'
+        magentoConfig.MAGENTO_STORE_ID = storeView.storeId
+      }
+    }
+
+    const env = Object.assign({}, magentoConfig, process.env)  // use process env as well
+    console.log('=== Blocks indexer is about to start ===')
+
+    exec('node', [
+      '--harmony',
+      '../mage2vuestorefront/src/cli.js',
+      'pages',
+      '--removeNonExistent=' + cmd.removeNonExistent
+    ], { env: env, shell: true }).then((res) => {
+
+    })
+
+  })
+
+
+program
   .command('import')
   .option('--store-code <storeCode>', 'storeCode in multistore setup', null)
   .option('--skip-reviews <skipReviews>', 'skip import of reviews', false)
@@ -120,6 +193,8 @@ program
   .option('--skip-attributes <skipAttributes>', 'skip import of attributes', false)
   .option('--skip-taxrule <skipTaxrule>', 'skip import of taxrule', false)
   .option('--skip-products <skipProducts>', 'skip import of products', false)
+  .option('--skip-pages <skipPages>', 'skip import of pages', false)
+  .option('--skip-blocks <skipBlocks>', 'skip import of blocks', false)
   .action((cmd) => {
     let magentoConfig = getMagentoDefaultConfig(cmd.storeCode)
 
@@ -152,6 +227,12 @@ program
     if (cmd.skipProducts) {
       magentoConfig.SKIP_PRODUCTS = true;
     }
+    if (cmd.skipPages) {
+      magentoConfig.SKIP_PAGES = true;
+    }
+    if (cmd.skipBlocks) {
+      magentoConfig.SKIP_BLOCKS = true;
+    }
 
     const env = Object.assign({}, magentoConfig, process.env)  // use process env as well
     console.log('=== The mage2vuestorefront full reindex is about to start. Using the following Magento2 config ===', magentoConfig)
@@ -175,7 +256,7 @@ program
         console.log(' == REVIEWS IMPORTER ==');
         return exec('node', [
           '--harmony',
-          'node_modules/mage2vuestorefront/src/cli.js',
+          '../mage2vuestorefront/src/cli.js',
           'reviews'
         ], {env: env, shell: true})
       }
@@ -189,7 +270,7 @@ program
         console.log(' == CATEGORIES IMPORTER ==');
         return exec('node', [
           '--harmony',
-          'node_modules/mage2vuestorefront/src/cli.js',
+          '../mage2vuestorefront/src/cli.js',
           'categories',
           '--removeNonExistent=true',
           '--extendedCategories=true'
@@ -205,7 +286,7 @@ program
         console.log(' == PRODUCT-CATEGORIES IMPORTER ==');
         return exec('node', [
           '--harmony',
-          'node_modules/mage2vuestorefront/src/cli.js',
+          '../mage2vuestorefront/src/cli.js',
           'productcategories'
         ], { env: env, shell: true })
       }
@@ -219,7 +300,7 @@ program
         console.log(' == ATTRIBUTES IMPORTER ==');
         return exec('node', [
           '--harmony',
-          'node_modules/mage2vuestorefront/src/cli.js',
+          '../mage2vuestorefront/src/cli.js',
           'attributes',
           '--removeNonExistent=true'
         ], { env: env, shell: true })
@@ -234,7 +315,7 @@ program
         console.log(' == TAXRULE IMPORTER ==');
         return exec('node', [
           '--harmony',
-          'node_modules/mage2vuestorefront/src/cli.js',
+          '../mage2vuestorefront/src/cli.js',
           'taxrule',
           '--removeNonExistent=true'
         ], { env: env, shell: true })
@@ -249,13 +330,49 @@ program
         console.log(' == PRODUCTS IMPORTER ==');
         return exec('node', [
           '--harmony',
-          'node_modules/mage2vuestorefront/src/cli.js',
+          '../mage2vuestorefront/src/cli.js',
           'products',
           '--removeNonExistent=true',
           '--partitions=1'
         ], { env: env, shell: true })
       }
     }
+
+    let importPagesPromise = function() {
+  if (magentoConfig.SKIP_PAGES) {
+    return Promise.resolve();
+  } else {
+    console.log(" == PAGES IMPORTER ==");
+    return exec(
+      "node",
+      [
+        "--harmony",
+        "../mage2vuestorefront/src/cli.js",
+        "pages",
+        "--removeNonExistent=true"
+      ],
+      { env: env, shell: true }
+    );
+  }
+};
+
+let importBlocksPromise = function() {
+  if (magentoConfig.SKIP_BLOCKS) {
+    return Promise.resolve();
+  } else {
+    console.log(" == BLOCKS IMPORTER ==");
+    return exec(
+      "node",
+      [
+        "--harmony",
+        "../mage2vuestorefront/src/cli.js",
+        "blocks",
+        "--removeNonExistent=true"
+      ],
+      { env: env, shell: true }
+    );
+  }
+};
 
     let reindexPromise = function() {
       console.log(' == REINDEXING DATABASE ==')
@@ -266,24 +383,28 @@ program
       ], {env: env, shell: true})
     }
 
-    createDbPromise().then( () => {
-      importReviewsPromise().then( () => {
-        importCategoriesPromise().then( () => {
-          importProductcategoriesPromise().then( () => {
+createDbPromise().then(() => {
+  importPagesPromise().then(() => {
+    importBlocksPromise().then(() => {
+      importReviewsPromise().then(() => {
+        importCategoriesPromise().then(() => {
+          importProductcategoriesPromise().then(() => {
             importAttributesPromise().then(() => {
               importTaxrulePromise().then(() => {
-                importProductsPromise().then (() => {
-                  reindexPromise().then( () => {
-                        console.log('Done! Bye Bye!')
-                        process.exit(0)
-                  })
-                })
-              })
-            })
-          })
-        })
-      })
-    })
+                importProductsPromise().then(() => {
+                  reindexPromise().then(() => {
+                    console.log("Done! Bye Bye!");
+                    process.exit(0);
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+});
   });
 
 

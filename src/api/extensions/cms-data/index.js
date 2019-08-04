@@ -11,7 +11,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('cmsPage', function (restClient) {
       let module = {};
       module.getPage = function () {
-        return restClient.get('/snowdog/cmsPage/'+ req.params.id);
+        return restClient.get('/cmsPage/'+ req.params.id);
       }
       return module;
     })
@@ -27,7 +27,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('cmsBlock', function (restClient) {
       let module = {};
       module.getBlock = function () {
-        return restClient.get('/snowdog/cmsBlock/'+ req.params.id);
+        return restClient.get('/cmsBlock/'+ req.params.id);
       }
       return module;
     })
