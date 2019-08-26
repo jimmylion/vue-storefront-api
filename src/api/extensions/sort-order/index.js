@@ -5,8 +5,14 @@ const Magento2Client = require("magento2-rest-client").Magento2Client;
 module.exports = ({ config, db }) => {
   let mcApi = Router();
 
-  mcApi.get("/category/:cid", (req, res) => {
-    const client = Magento2Client(config.magento2.api);
+  mcApi.get("/category/:storeCode/:cid", (req, res) => {
+    const client = Magento2Client({
+      ...config.magento2.api,
+      url:
+        config.magento2.api.url.replace("/rest", "/") +
+        req.params.storeCode +
+        "/rest"
+    });
     client.addMethods("sortOrder", function(restClient) {
       var module = {};
 
