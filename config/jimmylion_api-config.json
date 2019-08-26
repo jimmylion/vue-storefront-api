@@ -1,0 +1,335 @@
+{
+  "prismic": {
+    "baseUrl": "https://jimmylion.cdn.prismic.io/api/v2",
+    "cmsBlockEntityType": "cms-block",
+    "cmsPageEntityType": "cms-page"
+  },
+  "server": {
+    "host": "localhost",
+    "port": 8080,
+    "searchEngine": "elasticsearch"
+  },
+  "orders": {
+    "useServerQueue": false
+  },
+  "catalog": {
+    "excludeDisabledProducts": false
+  },
+  "elasticsearch": {
+    "host": "localhost",
+    "port": 9200,
+    "protocol": "http",
+    "user": "elastic",
+    "password": "changeme",
+    "min_score": 0.01,
+    "indices": ["vue_storefront_catalog_eu", "vue_storefront_catalog_de"],
+    "indexTypes": [
+      "product",
+      "category",
+      "cms",
+      "attribute",
+      "taxrule",
+      "review",
+      "cms_page"
+    ],
+    "apiVersion": "5.6"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0
+  },
+  "kue": {},
+  "storeViews": {
+    "multistore": true,
+    "commonCache": true,
+    "mapStoreUrlsFor": ["es", "it", "fr", "de", "eu", "gb", "mx", "us"],
+    "eu": {
+      "storeCode": "eu",
+      "disabled": false,
+      "storeId": 1,
+      "name": "United States Store",
+      "url": "/eu",
+      "elasticsearch": {
+        "host": "https://api.jl.eu.newfantastic.com/api/catalog",
+        "index": "vue_storefront_catalog_eu"
+      },
+      "tax": {
+        "sourcePriceIncludesTax": true,
+        "defaultCountry": "EUR",
+        "defaultRegion": "",
+        "calculateServerSide": true
+      },
+      "i18n": {
+        "fullCountryName": "United States of America",
+        "fullLanguageName": "English",
+        "defaultLanguage": "EN",
+        "defaultCountry": "EUR",
+        "defaultLocale": "en-US",
+        "currencyCode": "EUR",
+        "currencySign": "€ ",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    },
+    "de": {
+      "storeCode": "de",
+      "disabled": false,
+      "storeId": 1,
+      "name": "German Store",
+      "url": "/de",
+      "elasticsearch": {
+        "host": "https://api.jl.eu.newfantastic.com/api/catalog",
+        "index": "vue_storefront_catalog_de"
+      },
+      "tax": {
+        "sourcePriceIncludesTax": true,
+        "defaultCountry": "EUR",
+        "defaultRegion": "",
+        "calculateServerSide": true
+      },
+      "i18n": {
+        "fullCountryName": "Germany",
+        "fullLanguageName": "German",
+        "defaultLanguage": "DE",
+        "defaultCountry": "DE",
+        "defaultLocale": "de-DE",
+        "currencyCode": "EUR",
+        "currencySign": "€ ",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    }
+  },
+  "availableStores": ["eu", "de"],
+  "authHashSecret": "__SECRET_CHANGE_ME__",
+  "objHashSecret": "__SECRET_CHANGE_ME__",
+  "cart": {
+    "setConfigurableProductOptions": false
+  },
+  "tax": {
+    "defaultCountry": "PL",
+    "defaultRegion": "",
+    "calculateServerSide": true,
+    "alwaysSyncPlatformPricesOver": false,
+    "usePlatformTotals": true,
+    "setConfigurableProductOptions": true,
+    "sourcePriceIncludesTax": false
+  },
+  "bodyLimit": "100kb",
+  "corsHeaders": ["Link"],
+  "platform": "magento2",
+  "registeredExtensions": [
+    "mailchimp-subscribe",
+    "cms-data",
+    "mail-service",
+    "example-magento-api",
+    "klaviyo",
+    "sort-order"
+  ],
+  "extensions": {
+    "mailchimp": {
+      "listId": "e06875a7e1",
+      "apiKey": "a9a3318ea7d30f5c5596bd4a78ae0985-us3",
+      "apiUrl": "https://us3.api.mailchimp.com/3.0"
+    },
+    "mailService": {
+      "transport": {
+        "host": "smtp.gmail.com",
+        "port": 465,
+        "secure": true,
+        "user": "vuestorefront",
+        "pass": "vuestorefront.io"
+      },
+      "targetAddressWhitelist": ["contributors@vuestorefront.io"],
+      "secretString": "__THIS_IS_SO_SECRET__"
+    },
+    "klaviyo": {
+      "apiKey": "pk_7b5e2de3a9ab202a7daea53b8860307377",
+      "apiUrl": "https://a.klaviyo.com/api",
+      "listId": "H9TukH",
+      "multistoreListIds": {
+        "es": "MqQEvX",
+        "eu": "QvFDr8",
+        "it": "L93578",
+        "fr": "NWMLTp",
+        "us": "MPhcaA",
+        "mx": "QkbSGT",
+        "de": "Mjgq4M",
+        "uk": "LUWCpC"
+      }
+    }
+  },
+  "magento2": {
+    "url": "https://new.jimmylion.com",
+    "imgUrl": "https://new.jimmylion.com/media/catalog/product",
+    "assetPath": "/var/www/vue-storefront-api/var/magento/var/www/vhost/new.jimmylion.com/htdocs/current/pub/media",
+    "magentoUserName": "",
+    "magentoUserPassword": "",
+    "httpUserName": "",
+    "httpUserPassword": "",
+    "api": {
+      "url": "https://new.jimmylion.com/rest",
+      "consumerKey": "8xslf4o08wfsr3ixsh0iwa8yb9hgkhh6",
+      "consumerSecret": "kybgquypfm70sch9kkwb1tgp7fw7amsj",
+      "accessToken": "c04rxl5booo2p88dh0s15nrd1j7lvtkn",
+      "accessTokenSecret": "at49p619bk7muspk6ir46gadhd550g8e"
+    }
+  },
+  "imageable": {
+    "namespace": "",
+    "maxListeners": 512,
+    "imageSizeLimit": 2048,
+    "whitelist": {
+      "allowedHosts": [".*jimmylion.com", ".*newfantastic.com"]
+    },
+    "cache": {
+      "memory": 50,
+      "files": 20,
+      "items": 100
+    },
+    "concurrency": 0,
+    "counters": {
+      "queue": 2,
+      "process": 4
+    },
+    "simd": true,
+    "keepDownloads": true
+  },
+  "entities": {
+    "category": {
+      "includeFields": [
+        "children_data",
+        "id",
+        "children_count",
+        "sku",
+        "name",
+        "is_active",
+        "parent_id",
+        "level",
+        "url_key",
+        "meta_robots"
+      ]
+    },
+    "attribute": {
+      "includeFields": [
+        "attribute_code",
+        "id",
+        "entity_type_id",
+        "options",
+        "default_value",
+        "is_user_defined",
+        "frontend_label",
+        "attribute_id",
+        "default_frontend_label",
+        "is_visible_on_front",
+        "is_visible",
+        "is_comparable"
+      ]
+    },
+    "productList": {
+      "sort": "",
+      "includeFields": [
+        "type_id",
+        "sku",
+        "product_links",
+        "tax_class_id",
+        "special_price",
+        "special_to_date",
+        "special_from_date",
+        "name",
+        "price",
+        "priceInclTax",
+        "originalPriceInclTax",
+        "originalPrice",
+        "specialPriceInclTax",
+        "id",
+        "image",
+        "sale",
+        "new",
+        "url_key",
+        "hreflang",
+        "meta_robots"
+      ],
+      "excludeFields": [
+        "configurable_children",
+        "description",
+        "configurable_options",
+        "sgn"
+      ]
+    },
+    "productListWithChildren": {
+      "includeFields": [
+        "type_id",
+        "sku",
+        "name",
+        "tax_class_id",
+        "special_price",
+        "special_to_date",
+        "special_from_date",
+        "price",
+        "priceInclTax",
+        "originalPriceInclTax",
+        "originalPrice",
+        "specialPriceInclTax",
+        "id",
+        "image",
+        "sale",
+        "new",
+        "configurable_children.image",
+        "configurable_children.sku",
+        "configurable_children.price",
+        "configurable_children.special_price",
+        "configurable_children.priceInclTax",
+        "configurable_children.specialPriceInclTax",
+        "configurable_children.originalPrice",
+        "configurable_children.originalPriceInclTax",
+        "configurable_children.color",
+        "configurable_children.size",
+        "product_links",
+        "url_key",
+        "hreflang",
+        "meta_robots"
+      ],
+      "excludeFields": ["description", "sgn"]
+    },
+    "product": {
+      "excludeFields": [
+        "updated_at",
+        "created_at",
+        "attribute_set_id",
+        "status",
+        "visibility",
+        "tier_prices",
+        "options_container",
+        "msrp_display_actual_price_type",
+        "has_options",
+        "stock.manage_stock",
+        "stock.use_config_min_qty",
+        "stock.use_config_notify_stock_qty",
+        "stock.stock_id",
+        "stock.use_config_backorders",
+        "stock.use_config_enable_qty_inc",
+        "stock.enable_qty_increments",
+        "stock.use_config_manage_stock",
+        "stock.use_config_min_sale_qty",
+        "stock.notify_stock_qty",
+        "stock.use_config_max_sale_qty",
+        "stock.use_config_max_sale_qty",
+        "stock.qty_increments",
+        "small_image"
+      ],
+      "includeFields": null,
+      "filterFieldMapping": {
+        "category.name": "category.name.keyword"
+      }
+    }
+  },
+  "usePriceTiers": false,
+  "boost": {
+    "name": 3,
+    "category.name": 1,
+    "short_description": 1,
+    "description": 1,
+    "sku": 1,
+    "configurable_children.sku": 1
+  }
+}
