@@ -5,7 +5,7 @@ const Magento2Client = require("magento2-rest-client").Magento2Client;
 module.exports = ({ config, db }) => {
   let mcApi = Router();
 
-  mcApi.get("/all", (req, res) => {
+  mcApi.get("/category/:cid", (req, res) => {
     const client = Magento2Client(config.magento2.api);
     client.addMethods("sortOrder", function(restClient) {
       var module = {};
@@ -16,7 +16,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
     client.sortOrder
-      .all()
+      .all(req.params.cid)
       .then(result => {
         apiStatus(res, result, 200); // just dump it to the browser, result = JSON object
       })
