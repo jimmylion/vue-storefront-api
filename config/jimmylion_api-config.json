@@ -311,7 +311,8 @@
     "example-magento-api",
     "klaviyo",
     "sort-order",
-    "menus"
+    "menus",
+    "yotpo"
   ],
   "extensions": {
     "mailchimp": {
