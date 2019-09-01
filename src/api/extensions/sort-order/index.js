@@ -31,5 +31,25 @@ module.exports = ({ config, db }) => {
       });
   });
 
+  mcApi.get("/category/:cid", (req, res) => {
+    const client = Magento2Client(config.magento2.api);
+    client.addMethods("sortOrder", function(restClient) {
+      var module = {};
+
+      module.all = function(categoryId) {
+        return restClient.get(`/categories/${categoryId}/products`);
+      };
+      return module;
+    });
+    client.sortOrder
+      .all(req.params.cid)
+      .then(result => {
+        apiStatus(res, result, 200); // just dump it to the browser, result = JSON object
+      })
+      .catch(err => {
+        apiStatus(res, err, 500);
+      });
+  });
+
   return mcApi;
 };
