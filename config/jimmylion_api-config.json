@@ -44,19 +44,21 @@
     "multistore": true,
     "commonCache": true,
     "mapStoreUrlsFor": ["es", "it", "fr", "de", "eu", "gb", "mx", "us"],
-    "eu": {
-      "storeCode": "eu",
+    "us": {
+      "storeCode": "us",
       "disabled": false,
       "storeId": 1,
       "name": "United States Store",
-      "url": "/eu",
+      "url": "/us",
+      "appendStoreCode": true,
+      "productsPrefix": "socks-collection",
       "elasticsearch": {
-        "host": "https://api.jl.eu.newfantastic.com/api/catalog",
-        "index": "vue_storefront_catalog_eu"
+        "host": "https://api.jl.newfantastic.com/api/catalog",
+        "index": "vue_storefront_catalog_us"
       },
       "tax": {
         "sourcePriceIncludesTax": true,
-        "defaultCountry": "EUR",
+        "defaultCountry": "USA",
         "defaultRegion": "",
         "calculateServerSide": true
       },
@@ -64,8 +66,153 @@
         "fullCountryName": "United States of America",
         "fullLanguageName": "English",
         "defaultLanguage": "EN",
-        "defaultCountry": "EUR",
+        "defaultCountry": "USA",
         "defaultLocale": "en-US",
+        "currencyCode": "USD",
+        "currencySign": "$ ",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    },
+    "mx": {
+      "storeCode": "mx",
+      "disabled": false,
+      "storeId": 2,
+      "name": "Mexican Store",
+      "url": "/mx",
+      "appendStoreCode": true,
+      "productsPrefix": "coleccion-calcetines",
+      "elasticsearch": {
+        "host": "https://api.jl.newfantastic.com/api/catalog",
+        "index": "vue_storefront_catalog_mx"
+      },
+      "tax": {
+        "sourcePriceIncludesTax": true,
+        "defaultCountry": "MX",
+        "defaultRegion": "",
+        "calculateServerSide": true
+      },
+      "i18n": {
+        "fullCountryName": "Mexico",
+        "fullLanguageName": "Spanish",
+        "defaultLanguage": "ES",
+        "defaultCountry": "MX",
+        "defaultLocale": "es-ES",
+        "currencyCode": "MXN",
+        "currencySign": "$ ",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    },
+    "es": {
+      "storeCode": "es",
+      "disabled": false,
+      "storeId": 3,
+      "name": "Spanish Store",
+      "url": "/es",
+      "appendStoreCode": true,
+      "productsPrefix": "coleccion-calcetines",
+      "elasticsearch": {
+        "host": "https://api.jl.newfantastic.com/api/catalog",
+        "index": "vue_storefront_catalog_es"
+      },
+      "tax": {
+        "sourcePriceIncludesTax": true,
+        "defaultCountry": "ES",
+        "defaultRegion": "",
+        "calculateServerSide": true
+      },
+      "i18n": {
+        "fullCountryName": "Spain",
+        "fullLanguageName": "Spanish",
+        "defaultLanguage": "ES",
+        "defaultCountry": "ES",
+        "defaultLocale": "es-ES",
+        "currencyCode": "EUR",
+        "currencySign": "€ ",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    },
+    "eu": {
+      "storeCode": "eu",
+      "disabled": false,
+      "storeId": 4,
+      "name": "Europe Store",
+      "url": "/eu",
+      "appendStoreCode": true,
+      "productsPrefix": "socks-collection",
+      "elasticsearch": {
+        "host": "https://api.jl.newfantastic.com/api/catalog",
+        "index": "vue_storefront_catalog_eu"
+      },
+      "tax": {
+        "sourcePriceIncludesTax": true,
+        "defaultCountry": "EU",
+        "defaultRegion": "",
+        "calculateServerSide": true
+      },
+      "i18n": {
+        "fullCountryName": "Europe",
+        "fullLanguageName": "English",
+        "defaultLanguage": "EN",
+        "defaultCountry": "EU",
+        "defaultLocale": "en-US",
+        "currencyCode": "EUR",
+        "currencySign": "€ ",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    },
+    "uk": {
+      "storeCode": "uk",
+      "disabled": false,
+      "storeId": 5,
+      "name": "Great Britain Store",
+      "url": "/uk",
+      "appendStoreCode": true,
+      "productsPrefix": "socks-collection",
+      "elasticsearch": {
+        "host": "https://api.jl.newfantastic.com/api/catalog",
+        "index": "vue_storefront_catalog_uk"
+      },
+      "tax": {
+        "sourcePriceIncludesTax": true,
+        "defaultCountry": "GB",
+        "defaultRegion": "",
+        "calculateServerSide": true
+      },
+      "i18n": {
+        "fullCountryName": "United Kingdomn",
+        "fullLanguageName": "English",
+        "defaultLanguage": "EN",
+        "defaultCountry": "GB",
+        "defaultLocale": "en-US",
+        "currencyCode": "GBP",
+        "currencySign": "£ ",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    },
+    "it": {
+      "storeCode": "it",
+      "disabled": false,
+      "storeId": 6,
+      "name": "Italian Store",
+      "url": "/it",
+      "appendStoreCode": true,
+      "productsPrefix": "collezione-di-calzini",
+      "elasticsearch": {
+        "host": "https://api.jl.newfantastic.com/api/catalog",
+        "index": "vue_storefront_catalog_it"
+      },
+      "tax": {
+        "sourcePriceIncludesTax": true,
+        "defaultCountry": "IT",
+        "defaultRegion": "",
+        "calculateServerSide": true
+      },
+      "i18n": {
+        "fullCountryName": "Italy",
+        "fullLanguageName": "Italian",
+        "defaultLanguage": "IT",
+        "defaultCountry": "IT",
+        "defaultLocale": "it-IT",
         "currencyCode": "EUR",
         "currencySign": "€ ",
         "dateFormat": "HH:mm D-M-YYYY"
@@ -74,16 +221,18 @@
     "de": {
       "storeCode": "de",
       "disabled": false,
-      "storeId": 1,
+      "storeId": 7,
       "name": "German Store",
       "url": "/de",
+      "appendStoreCode": true,
+      "productsPrefix": "socken-sammlung",
       "elasticsearch": {
-        "host": "https://api.jl.eu.newfantastic.com/api/catalog",
+        "host": "https://api.jl.newfantastic.com/api/catalog",
         "index": "vue_storefront_catalog_de"
       },
       "tax": {
         "sourcePriceIncludesTax": true,
-        "defaultCountry": "EUR",
+        "defaultCountry": "DE",
         "defaultRegion": "",
         "calculateServerSide": true
       },
@@ -93,6 +242,35 @@
         "defaultLanguage": "DE",
         "defaultCountry": "DE",
         "defaultLocale": "de-DE",
+        "currencyCode": "EUR",
+        "currencySign": "€ ",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    },
+    "fr": {
+      "storeCode": "fr",
+      "disabled": false,
+      "storeId": 8,
+      "name": "French Store",
+      "url": "/fr",
+      "appendStoreCode": true,
+      "productsPrefix": "collection-de-chaussettes",
+      "elasticsearch": {
+        "host": "https://api.jl.newfantastic.com/api/catalog",
+        "index": "vue_storefront_catalog_fr"
+      },
+      "tax": {
+        "sourcePriceIncludesTax": true,
+        "defaultCountry": "FR",
+        "defaultRegion": "",
+        "calculateServerSide": true
+      },
+      "i18n": {
+        "fullCountryName": "France",
+        "fullLanguageName": "French",
+        "defaultLanguage": "FR",
+        "defaultCountry": "FR",
+        "defaultLocale": "fr-FR",
         "currencyCode": "EUR",
         "currencySign": "€ ",
         "dateFormat": "HH:mm D-M-YYYY"
