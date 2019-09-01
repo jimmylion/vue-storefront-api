@@ -22,7 +22,16 @@
     "user": "elastic",
     "password": "changeme",
     "min_score": 0.01,
-    "indices": ["vue_storefront_catalog_eu", "vue_storefront_catalog_de"],
+    "indices": [
+      "vue_storefront_catalog_eu",
+      "vue_storefront_catalog_de",
+      "vue_storefront_catalog_us",
+      "vue_storefront_catalog_mx",
+      "vue_storefront_catalog_es",
+      "vue_storefront_catalog_uk",
+      "vue_storefront_catalog_it",
+      "vue_storefront_catalog_fr"
+    ],
     "indexTypes": [
       "product",
       "category",
