@@ -110,7 +110,7 @@ module.exports = ({ config, db }) => {
     
 		client.packs.initPack(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem).then((result) => {
       
-      client.packs.addPackParent(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem, result.item_id).then((result2) => {
+      return client.packs.addPackParent(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem, result.item_id).then((result2) => {
         apiStatus(res, result, 200);
       }).catch(err => {
 			  apiStatus(res, err, 500);
