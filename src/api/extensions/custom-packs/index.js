@@ -59,13 +59,19 @@ module.exports = ({ config, db }) => {
 
   });
 
-  mcApi.post('/add', (req, res) => {
+  mcApi.post('/add/:storeCode', (req, res) => {
 
     if (!req.body.cartItem) {
 			return apiStatus(res, 'No cartItem element provided within the request body', 500)
 		}
 
-    const client = Magento2Client(config.magento2.api);
+    const client = Magento2Client({
+      ...config.magento2.api,
+      url:
+        config.magento2.api.url.replace("/rest", "/") +
+        req.params.storeCode +
+        "/rest"
+    });
 
     client.addMethods("packs", function(restClient) {
       var module = {};
