@@ -74,7 +74,7 @@ module.exports = ({ config, db }) => {
         if (adminRequest) {
             return restClient.post('/carts/' + cartId + '/items?separate=1&pack_type=parent', { cartItem: cartItem });
         } else {
-            if (customerToken && isNumeric(cartId)) {
+            if (customerToken && !isNaN(cartId)) {
                 return restClient.post('/carts/mine/items?separate=1&pack_type=parent', { cartItem: cartItem }, customerToken);
             } else 
             {
