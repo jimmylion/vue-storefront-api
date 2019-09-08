@@ -312,7 +312,8 @@
     "klaviyo",
     "sort-order",
     "menus",
-    "yotpo"
+    "yotpo",
+    "custom-packs"
   ],
   "extensions": {
     "mailchimp": {
