@@ -86,7 +86,7 @@ module.exports = ({ config, db }) => {
     });
 
     
-		cartProxy.update(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem).then((result) => {
+		client.packs.update(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem).then((result) => {
 			apiStatus(res, result, 200);
 		}).catch(err => {
 			apiStatus(res, err, 500);
