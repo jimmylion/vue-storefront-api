@@ -167,11 +167,7 @@ module.exports = ({ config, db }) => {
 
   })
 
-  mcApi.post('/remove/:packId/:storeCode', (req, res) => {
-
-    if (!req.body.cartItem) {
-			return apiStatus(res, 'No cartItem element provided within the request body', 500)
-		}
+  mcApi.delete('/remove/:itemId/:storeCode', (req, res) => {
 
     const client = Magento2Client({
       ...config.magento2.api,
@@ -181,29 +177,28 @@ module.exports = ({ config, db }) => {
         "/rest"
     });
 
+    const { itemId } = req.params
+
     client.addMethods("packs", function(restClient) {
       var module = {};
 
       // 4. We remove childs from the parent
-      module.removePackChild = function (customerToken, cartId, cartItem, packId, adminRequest = false) {
+      module.removePackChild = function (customerToken, cartId, adminRequest = false) {
         if (adminRequest) {
-            return restClient.delete('/carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem });
+            return restClient.delete('/carts/' + cartId + '/items/' + itemId);
         } else {
             if (customerToken && !isNaN(cartId)) {
-                return restClient.delete('/carts/mine/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem }, customerToken);
+                return restClient.delete('/carts/mine/items/' + itemId, customerToken);
             } else {
-                return restClient.delete('/guest-carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem });
+              return restClient.delete('/guest-carts/' + cartId + '/items/' + itemId);
             }
         }
       }
 
-
       return module;
     });
 
-    
-		client.packs.removePackChild(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem, req.params.packId).then((result) => {
-      
+		client.packs.removePackChild(req.query.token, req.query.cartId ? req.query.cartId : null).then((result) => {
       apiStatus(res, result, 200);
 
 		}).catch(err => {
