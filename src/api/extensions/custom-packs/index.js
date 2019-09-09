@@ -142,12 +142,12 @@ module.exports = ({ config, db }) => {
       // 3. We add childs to the parent
       module.addPackChild = function (customerToken, cartId, cartItem, packId, adminRequest = false) {
         if (adminRequest) {
-            return restClient.post('/carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + req.params.packId, { cartItem: cartItem });
+            return restClient.post('/carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem });
         } else {
             if (customerToken && !isNaN(cartId)) {
-                return restClient.post('/carts/mine/items?separate=1&pack_type=child&pack_id=' + req.params.packId, { cartItem: cartItem }, customerToken);
+                return restClient.post('/carts/mine/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem }, customerToken);
             } else {
-                return restClient.post('/guest-carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + req.params.packId, { cartItem: cartItem });
+                return restClient.post('/guest-carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem });
             }
         }
       }
@@ -157,7 +157,7 @@ module.exports = ({ config, db }) => {
     });
 
     
-		client.packs.addPackChild(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem, packId).then((result) => {
+		client.packs.addPackChild(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem, req.params.packId).then((result) => {
       
       apiStatus(res, result, 200);
 
