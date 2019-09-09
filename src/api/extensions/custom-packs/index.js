@@ -167,5 +167,50 @@ module.exports = ({ config, db }) => {
 
   })
 
+  mcApi.post('/remove/:packId/:storeCode', (req, res) => {
+
+    if (!req.body.cartItem) {
+			return apiStatus(res, 'No cartItem element provided within the request body', 500)
+		}
+
+    const client = Magento2Client({
+      ...config.magento2.api,
+      url:
+        config.magento2.api.url.replace("/rest", "/") +
+        req.params.storeCode +
+        "/rest"
+    });
+
+    client.addMethods("packs", function(restClient) {
+      var module = {};
+
+      // 4. We remove childs from the parent
+      module.removePackChild = function (customerToken, cartId, cartItem, packId, adminRequest = false) {
+        if (adminRequest) {
+            return restClient.delete('/carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem });
+        } else {
+            if (customerToken && !isNaN(cartId)) {
+                return restClient.delete('/carts/mine/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem }, customerToken);
+            } else {
+                return restClient.delete('/guest-carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem });
+            }
+        }
+      }
+
+
+      return module;
+    });
+
+    
+		client.packs.removePackChild(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem, req.params.packId).then((result) => {
+      
+      apiStatus(res, result, 200);
+
+		}).catch(err => {
+			apiStatus(res, err, 500);
+		})
+
+  })
+
   return mcApi;
 };
