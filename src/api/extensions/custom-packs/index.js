@@ -59,11 +59,47 @@ module.exports = ({ config, db }) => {
 
   });
 
-  mcApi.post('/init/:storeCode', (req, res) => {
+  mcApi.post('/add/:storeCode', (req, res) => {
+    if (!req.body.packType) {
+			return apiStatus(res, 'packType not provided', 500)
+    }
+    
+    if (!req.body.packSize) {
+			return apiStatus(res, 'packSize not provided', 500)
+    }
 
-    if (!req.body.cartItem) {
-			return apiStatus(res, 'No cartItem element provided within the request body', 500)
-		}
+    if (!req.body.quote_id) {
+			return apiStatus(res, 'quote_id not provided', 500)
+    }
+    
+    if (!req.body.childs) {
+			return apiStatus(res, 'Child products [childs] not provided', 500)
+    }
+
+    if (!req.body.packagingId) {
+			return apiStatus(res, 'packagingId not provided', 500)
+    }
+    
+    const { packSize, packType, childs, quote_id, packagingId } = req.body
+    const packCapacity = +(packSize.split('-')[0])
+
+    if (childs.length !== packCapacity) {
+			return apiStatus(res, 'Bad amount of childs provided', 500)
+    }
+
+    const parent = {
+      sku: `${packSize}-${packType}`,
+      qty: 1,
+      price: 0,
+      quote_id
+    }
+
+    const packaging = {
+      sku: packagingId,
+      qty: 1,
+      price: 0,
+      quote_id
+    }
 
     const client = Magento2Client({
       ...config.magento2.api,
@@ -104,41 +140,6 @@ module.exports = ({ config, db }) => {
         }
       }
 
-      return module;
-    });
-
-    
-		client.packs.initPack(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem).then((result) => {
-      
-      return client.packs.addPackParent(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem, result.item_id).then((result2) => {
-        apiStatus(res, result, 200);
-      }).catch(err => {
-			  apiStatus(res, err, 500);
-      })
-
-		}).catch(err => {
-			apiStatus(res, err, 500);
-		})
-
-  })
-
-  mcApi.post('/add/:packId/:storeCode', (req, res) => {
-
-    if (!req.body.cartItem) {
-			return apiStatus(res, 'No cartItem element provided within the request body', 500)
-		}
-
-    const client = Magento2Client({
-      ...config.magento2.api,
-      url:
-        config.magento2.api.url.replace("/rest", "/") +
-        req.params.storeCode +
-        "/rest"
-    });
-
-    client.addMethods("packs", function(restClient) {
-      var module = {};
-
       // 3. We add childs to the parent
       module.addPackChild = function (customerToken, cartId, cartItem, packId, adminRequest = false) {
         if (adminRequest) {
@@ -156,56 +157,57 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    
-		client.packs.addPackChild(req.query.token, req.query.cartId ? req.query.cartId : null, req.body.cartItem, req.params.packId).then((result) => {
+    client.packs.initPack(
+      req.query.token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      parent
+    ).then((result) => {
+
+      // 1. We added the pack parent to the cart
+      return client.packs.addPackParent(
+        req.query.token,
+        req.query.cartId 
+          ? req.query.cartId 
+          : null,
+        packaging,
+        result.item_id
+      ).then((result2) => {
       
-      apiStatus(res, result, 200);
+        // 2. We added the pack packaging to the cart
+        return Promise.all(childs.map(child => {
+          return client.packs.addPackChild(
+            req.query.token,
+            req.query.cartId 
+              ? req.query.cartId 
+              : null,
+            child,
+            result.item_id
+          ) 
+        })).then(lastResult => {
+
+          // 3. We added childs to the parent
+          apiStatus(res, lastResult, 200);
+        }).catch(err => {
+
+          // 3. We could not add childs to the parent
+			    apiStatus(res, '3' + err, 500);          
+        })
+      }).catch(err => {
+
+        // 2. We couldn't add the pack packaging to the cart   
+			  apiStatus(res, '2' + err, 500);
+      })
 
 		}).catch(err => {
-			apiStatus(res, err, 500);
+      // 1. We couldn't add the pack parent to the cart
+			apiStatus(res, '1' + err, 500);
 		})
 
   })
 
-  mcApi.delete('/remove/:itemId/:storeCode', (req, res) => {
-
-    const client = Magento2Client({
-      ...config.magento2.api,
-      url:
-        config.magento2.api.url.replace("/rest", "/") +
-        req.params.storeCode +
-        "/rest"
-    });
-
-    const { itemId } = req.params
-
-    client.addMethods("packs", function(restClient) {
-      var module = {};
-
-      // 4. We remove childs from the parent
-      module.removePackChild = function (customerToken, cartId, adminRequest = false) {
-        if (adminRequest) {
-            return restClient.delete('/carts/' + cartId + '/items/' + itemId);
-        } else {
-            if (customerToken && !isNaN(cartId)) {
-                return restClient.delete('/carts/mine/items/' + itemId, customerToken);
-            } else {
-              return restClient.delete('/guest-carts/' + cartId + '/items/' + itemId);
-            }
-        }
-      }
-
-      return module;
-    });
-
-		client.packs.removePackChild(req.query.token, req.query.cartId ? req.query.cartId : null).then((result) => {
-      apiStatus(res, result, 200);
-
-		}).catch(err => {
-			apiStatus(res, err, 500);
-		})
-
-  })
+  
 
   return mcApi;
 };
