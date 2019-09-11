@@ -113,7 +113,7 @@ module.exports = ({ config, db }) => {
       var module = {};
 
       // 1. We add the pack parent to the cart
-      module.initPack = function (customerToken, cartId, cartItem, adminRequest = false) {
+      module.addPackParent = function (customerToken, cartId, cartItem, adminRequest = false) {
         if (adminRequest) {
             return restClient.post('/carts/' + cartId + '/items?separate=1&pack_type=parent', { cartItem: cartItem });
         } else {
@@ -127,15 +127,15 @@ module.exports = ({ config, db }) => {
       }
 
       // 2. We add the pack packaging to the cart
-      module.addPackParent = function (customerToken, cartId, cartItem, packId, adminRequest = false) {
+      module.addPackPackaging = function (customerToken, cartId, cartItem, packId, adminRequest = false) {
         if (adminRequest) {
-            return restClient.post('/carts/' + cartId + '/items?separate=1&pack_type=parent&pack_id=' + packId, { cartItem: cartItem });
+            return restClient.post('/carts/' + cartId + '/items?separate=1&pack_type=packaging&pack_id=' + packId, { cartItem: cartItem });
         } else {
             if (customerToken && !isNaN(cartId)) {
-                return restClient.post('/carts/mine/items?separate=1&pack_type=parent&pack_id=' + packId, { cartItem: cartItem }, customerToken);
+                return restClient.post('/carts/mine/items?separate=1&pack_type=packaging&pack_id=' + packId, { cartItem: cartItem }, customerToken);
             } else 
             {
-                return restClient.post('/guest-carts/' + cartId + '/items?separate=1&pack_type=parent&pack_id=' + packId, { cartItem: cartItem });
+                return restClient.post('/guest-carts/' + cartId + '/items?separate=1&pack_type=packaging&pack_id=' + packId, { cartItem: cartItem });
             }
         }
       }
@@ -157,7 +157,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.packs.initPack(
+    client.packs.addPackParent(
       req.query.token,
       req.query.cartId
         ? req.query.cartId
@@ -166,7 +166,7 @@ module.exports = ({ config, db }) => {
     ).then((result) => {
 
       // 1. We added the pack parent to the cart
-      return client.packs.addPackParent(
+      return client.packs.addPackPackaging(
         req.query.token,
         req.query.cartId 
           ? req.query.cartId 
