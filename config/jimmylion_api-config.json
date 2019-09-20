@@ -39,7 +39,8 @@
       "attribute",
       "taxrule",
       "review",
-      "cms_page"
+      "cms_page",
+      "cms_block"
     ],
     "apiVersion": "5.6"
   },
