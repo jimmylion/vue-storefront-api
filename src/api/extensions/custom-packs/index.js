@@ -59,6 +59,62 @@ module.exports = ({ config, db }) => {
 
   });
 
+  mcApi.delete('/:packId/:storeCode', (req, res) => {
+    
+    if (!req.params.packId) {
+			return apiStatus(res, 'packId not provided', 500)
+    }
+
+    if (!req.params.storeCode) {
+			return apiStatus(res, 'storeCode not provided', 500)
+    }
+
+    if (!req.query.token) {
+			return apiStatus(res, 'token not provided', 500)
+    }
+    
+    const { packId, storeCode } = req.params
+    const { cartId } = req.query
+
+    const client = Magento2Client({
+      ...config.magento2.api,
+      url:
+        config.magento2.api.url.replace("/rest", "/") +
+        storeCode +
+        "/rest"
+    });
+
+    client.addMethods("packs", function(restClient) {
+      var module = {};
+
+      // All in one
+      module.remove = function (customerToken, cartId, adminRequest = false) {
+        if (adminRequest) {
+            return restClient.delete('/carts/' + cartId + '/packs', { packItems });
+        } else {
+            if (customerToken && !isNaN(cartId)) {
+                return restClient.delete('/carts/mine/packs/' + packId, customerToken);
+            } else 
+            {
+                return restClient.delete('/guest-carts/' + cartId + '/packs/' + packId);
+            }
+        }
+      }
+
+      return module;
+    });
+
+    client.packs.remove(
+      req.query.token,
+      req.query.cartId
+        ? req.query.cartId
+        : null
+    ).then(result => {
+      apiStatus(res, result, 200);
+    }).catch(err => console.error(err))
+
+  })
+
   mcApi.post('/add/:storeCode', (req, res) => {
     if (!req.body.packType) {
 			return apiStatus(res, 'packType not provided', 500)
@@ -128,111 +184,17 @@ module.exports = ({ config, db }) => {
         }
       }
 
-      // 1. We add the pack parent to the cart
-      // module.addPackParent = function (customerToken, cartId, cartItem, adminRequest = false) {
-      //   if (adminRequest) {
-      //       return restClient.post('/carts/' + cartId + '/items?separate=1&pack_type=parent', { cartItem: cartItem });
-      //   } else {
-      //       if (customerToken && !isNaN(cartId)) {
-      //           return restClient.post('/carts/mine/items?separate=1&pack_type=parent', { cartItem: cartItem }, customerToken);
-      //       } else 
-      //       {
-      //           return restClient.post('/guest-carts/' + cartId + '/items?separate=1&pack_type=parent', { cartItem: cartItem });
-      //       }
-      //   }
-      // }
-
-      // // 2. We add the pack packaging to the cart
-      // module.addPackPackaging = function (customerToken, cartId, cartItem, packId, adminRequest = false) {
-      //   if (adminRequest) {
-      //       return restClient.post('/carts/' + cartId + '/items?separate=1&pack_type=packaging&pack_id=' + packId, { cartItem: cartItem });
-      //   } else {
-      //       if (customerToken && !isNaN(cartId)) {
-      //           return restClient.post('/carts/mine/items?separate=1&pack_type=packaging&pack_id=' + packId, { cartItem: cartItem }, customerToken);
-      //       } else 
-      //       {
-      //           return restClient.post('/guest-carts/' + cartId + '/items?separate=1&pack_type=packaging&pack_id=' + packId, { cartItem: cartItem });
-      //       }
-      //   }
-      // }
-
-      // // 3. We add childs to the parent
-      // module.addPackChild = function (customerToken, cartId, cartItem, packId, adminRequest = false) {
-      //   if (adminRequest) {
-      //       return restClient.post('/carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem });
-      //   } else {
-      //       if (customerToken && !isNaN(cartId)) {
-      //           return restClient.post('/carts/mine/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem }, customerToken);
-      //       } else {
-      //           return restClient.post('/guest-carts/' + cartId + '/items?separate=1&pack_type=child&pack_id=' + packId, { cartItem: cartItem });
-      //       }
-      //   }
-      // }
-
-
       return module;
     });
 
     client.packs.addToCart(
       req.query.token,
-      req.query.cartId
-        ? req.query.cartId
-        : null
+      cartId ? cartId : null
     ).then(result => {
       apiStatus(res, result, 200);
     }).catch(err => console.error(err))
 
-  //   client.packs.addPackParent(
-  //     req.query.token,
-  //     req.query.cartId
-  //       ? req.query.cartId
-  //       : null,
-  //     parent
-  //   ).then((result) => {
-
-  //     // 1. We added the pack parent to the cart
-  //     return client.packs.addPackPackaging(
-  //       req.query.token,
-  //       req.query.cartId 
-  //         ? req.query.cartId 
-  //         : null,
-  //       packaging,
-  //       result.item_id
-  //     ).then((result2) => {
-      
-  //       // 2. We added the pack packaging to the cart
-  //       return Promise.all(childs.map(child => {
-  //         return client.packs.addPackChild(
-  //           req.query.token,
-  //           req.query.cartId 
-  //             ? req.query.cartId 
-  //             : null,
-  //           child,
-  //           result.item_id
-  //         ) 
-  //       })).then(lastResult => {
-
-  //         // 3. We added childs to the parent
-  //         apiStatus(res, lastResult, 200);
-  //       }).catch(err => {
-
-  //         // 3. We could not add childs to the parent
-	// 		    apiStatus(res, '3' + err, 500);          
-  //       })
-  //     }).catch(err => {
-
-  //       // 2. We couldn't add the pack packaging to the cart   
-	// 		  apiStatus(res, '2' + err, 500);
-  //     })
-
-	// 	}).catch(err => {
-  //     // 1. We couldn't add the pack parent to the cart
-	// 		apiStatus(res, '1' + err, 500);
-	// 	})
-
   })
-
-  
 
   return mcApi;
 };
