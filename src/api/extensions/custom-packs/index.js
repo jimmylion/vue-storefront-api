@@ -69,8 +69,8 @@ module.exports = ({ config, db }) => {
 			return apiStatus(res, 'storeCode not provided', 500)
     }
 
-    if (!req.query.token) {
-			return apiStatus(res, 'token not provided', 500)
+    if (!req.query.cartId) {
+			return apiStatus(res, 'cartId not provided', 500)
     }
     
     const { packId, storeCode } = req.params
