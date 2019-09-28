@@ -74,7 +74,6 @@ module.exports = ({ config, db }) => {
     }
     
     const { packId, storeCode } = req.params
-    const { cartId } = req.query
 
     const client = Magento2Client({
       ...config.magento2.api,
@@ -90,7 +89,7 @@ module.exports = ({ config, db }) => {
       // All in one
       module.remove = function (customerToken, cartId, adminRequest = false) {
         if (adminRequest) {
-            return restClient.delete('/carts/' + cartId + '/packs', { packItems });
+            return restClient.delete('/carts/' + cartId + '/packs/' + packId);
         } else {
             if (customerToken && !isNaN(cartId)) {
                 return restClient.delete('/carts/mine/packs/' + packId, customerToken);
