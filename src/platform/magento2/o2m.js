@@ -89,6 +89,13 @@ function processSingleOrder(orderData, config, job, done, logger = console) {
           return itm.sku === clientItem.sku || itm.sku.indexOf(clientItem.sku + '-') >= 0 /* bundle products */
         })
         if (!serverItem) {
+          // Custom packs Start
+          // Let's find the parent
+          const packParent = serverItems.find(item => item.item_id === clientItem.pack_id)
+          if (packParent) {
+            continue;
+          }
+          // Custom packs End
           logger.info(THREAD_ID + '< No server item for ' + clientItem.sku)
           syncPromises.push(api.cart.update(null, cartId, { // use magento API
             sku: clientItem.parentSku && config.cart.setConfigurableProductOptions ? clientItem.parentSku : clientItem.sku,
