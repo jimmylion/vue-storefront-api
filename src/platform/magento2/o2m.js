@@ -123,6 +123,13 @@ function processSingleOrder(orderData, config, job, done, logger = console) {
             return itm.sku === serverItem.sku || serverItem.sku.indexOf(itm.sku + '-') >= 0 /* bundle products */
           })
           if (!clientItem) {
+            // Custom packs Start
+            // Let's find the parent
+            const packParent = serverItems.find(item => item.item_id === serverItem.pack_id)
+            if (packParent) {
+              continue;
+            }
+            // Custom packs End
             logger.info(THREAD_ID + '< No client item for ' + serverItem.sku + ', removing from server cart') // use magento API
             syncPromises.push(api.cart.delete(null, cartId, { // delete server side item if not present if client's cart
               sku: serverItem.sku,
