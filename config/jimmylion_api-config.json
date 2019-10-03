@@ -314,7 +314,8 @@
     "sort-order",
     "menus",
     "yotpo",
-    "custom-packs"
+    "custom-packs",
+    "payment-adyen"
   ],
   "extensions": {
     "mailchimp": {
