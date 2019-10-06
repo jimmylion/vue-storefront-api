@@ -19,28 +19,43 @@ export default ({ config, db }) =>
     }
 
     req.socket.setMaxListeners(config.imageable.maxListeners || 50);
+
+    // For product's image /img/<width>/<height>/<action:fit,resize,identify>/<relative_url>
+    // For category's image /img/<width>/<height>/<action:fit,resize,identify>/category/<relative_url>
     
     let width
     let height
     let action
     let imgUrl
+    let isCategory
 
     if (req.query.url) { // url provided as the query param
       imgUrl = decodeURIComponent(req.query.url)
       width = parseInt(req.query.width)
       height = parseInt(req.query.height)
+      isCategory = req.query.category ? req.query.category : false
       action = req.query.action
     } else {
       let urlParts = req.url.split('/');
       width = parseInt(urlParts[1]);
       height = parseInt(urlParts[2]);
       action = urlParts[3];
-      imgUrl = `${config[config.platform].imgUrl}/${urlParts.slice(4).join('/')}`; // full original image url
+      if (urlParts[4] === 'category') {
+        isCategory = true
+        imgUrl = `${config[config.platform].imgUrl}/${urlParts.slice(5).join('/')}`.replace('product', 'category'); // full original image url
+      } else {
+        imgUrl = `${config[config.platform].imgUrl}/${urlParts.slice(4).join('/')}`; // full original image url
+      }
   
       if (urlParts.length < 4) {
         return res.status(400).send({
           code: 400,
           result: 'Please provide following parameters: /img/<width>/<height>/<action:fit,resize,identify>/<relative_url>'
+        });
+      } else if (isCategory && urlParts.length < 4) {
+        return res.status(400).send({
+          code: 400,
+          result: 'Please provide following parameters: /img/<width>/<height>/<action:fit,resize,identify>/category/<relative_url>'
         });
       }
     }
