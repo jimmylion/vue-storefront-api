@@ -398,7 +398,8 @@
         "parent_id",
         "level",
         "url_key",
-        "meta_robots"
+        "meta_robots",
+        "show_in_list"
       ]
     },
     "attribute": {
