@@ -114,7 +114,7 @@ module.exports = ({ config, db }) => {
 
   })
 
-  mcApi.post('/add/:storeCode', (req, res) => {
+  mcApi.post('/add/:storeCode', async (req, res) => {
     if (!req.body.packType) {
 			return apiStatus(res, 'packType not provided', 500)
     }
@@ -134,13 +134,12 @@ module.exports = ({ config, db }) => {
     if (!req.body.cartId) {
 			return apiStatus(res, 'cartId not provided', 500)
     }
-    
-    const { packSize, packType, childs, cartId, packagingId } = req.body
-    const packCapacity = +(packSize.split('-')[0])
 
-    if (childs.length !== packCapacity) {
-			return apiStatus(res, 'Bad amount of childs provided', 500)
+    if (!req.body.packId) {
+			return apiStatus(res, 'packId not provided', 500)
     }
+    
+    const { packId, packSize, packType, childs, cartId, packagingId } = req.body
 
     const packItems = [
       {
@@ -171,6 +170,7 @@ module.exports = ({ config, db }) => {
 
       // All in one
       module.addToCart = function (customerToken, cartId, adminRequest = false) {
+        
         if (adminRequest) {
             return restClient.post('/carts/' + cartId + '/packs', { packItems });
         } else {
@@ -186,12 +186,36 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.packs.addToCart(
-      req.query.token,
-      cartId ? cartId : null
-    ).then(result => {
-      apiStatus(res, result, 200);
-    }).catch(err => console.error(err))
+    client.addMethods("packs", function(restClient) {
+      var module = {};
+
+      module.get = function() {
+        return restClient.get(`/jimmylion/pack/${packId}`);
+      };
+      return module;
+    });
+
+    client.packs.get().then(([result,]) => {
+
+      const packCapacity = result.values['pack-size'][packSize].pack_size
+      if (!packCapacity) { 
+        apiStatus(res, 'Bad amount of childs in the pack', 500);
+      }
+      if (childs.length !== +packCapacity) {
+        return apiStatus(res, 'Bad amount of childs provided', 500)
+      }
+
+      client.packs.addToCart(
+        req.query.token,
+        cartId ? cartId : null
+      ).then(result => {
+        apiStatus(res, result, 200);
+      }).catch(err => console.error(err))
+
+    }).catch(err => {
+      console.error(err)
+      apiStatus(res, err, 500);
+    })
 
   })
 
